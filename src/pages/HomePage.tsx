@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { ImageList, ImageListItem, ImageListItemBar, Button, ButtonGroup, TextField, Pagination, useMediaQuery } from '@mui/material'
 import { Link } from 'react-router-dom'
 import useFetchImageData from '../utils/useFetchImageData'
+import { FetchedData } from '../interfaces/Interfaces'
 
 function HomePage() {
   const [imageData, setImageData] = useState('')
@@ -27,15 +28,17 @@ function HomePage() {
     setCurrentPage(1)
   }
 
+  const storedImages: FetchedData = JSON.parse(localStorage.getItem('imagesArray') || 'false')
+
   const imagesArray = fetchedData && fetchedData.data.hits
   const fetchedHits = fetchedData && fetchedData.data.totalHits
   const fetchedPages = Math.ceil(fetchedHits / imagesArray?.length)
-
+  
   return (
     <div>
       <div>
-        <TextField size='small' variant='outlined' value={inputData} onChange={handleInputData} />
-        <Button style={{marginLeft: '5px'}} size='large' variant='contained' onClick={() => {handleSearchClick()}}>Search</Button>
+        <TextField style={ screenMediaQuery ? {} : { width: '-webkit-fill-available' } } size='small' variant='outlined' value={inputData} onChange={handleInputData} />
+        <Button style={ screenMediaQuery ? { marginLeft: '5px'} : { display: 'block', width: '-webkit-fill-available', marginTop: '5px', marginBottom: '5px' }} size='large' variant='contained' onClick={() => {handleSearchClick()}}>Search</Button>
       </div>
       <ButtonGroup variant='text'>
         <Button size='small' onClick={handleCategoryClick}>fashion</Button>
@@ -46,7 +49,7 @@ function HomePage() {
       </ButtonGroup>
       <ImageList gap={4} cols={screenMediaQuery ? 4 : 1} rowHeight={320} variant='masonry'>
         <>
-          {imagesArray?.map((data) => {
+          {storedImages.hits?.map((data) => {
             return (
               <Link key={data.id} to={`/${data.id}`} state={{ homePage: { data } }}>
                 <ImageListItem key={data.id}>
