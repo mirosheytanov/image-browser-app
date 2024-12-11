@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
-import { ImageList, ImageListItem, ImageListItemBar, Button, ButtonGroup, TextField, Pagination, useMediaQuery } from '@mui/material'
+import { CircularProgress, ImageList, ImageListItem, ImageListItemBar, Pagination, useMediaQuery } from '@mui/material'
 import { Link } from 'react-router-dom'
 import useFetchImageData from '../utils/useFetchImageData'
+import SearchComponent from '../components/SearchComponent'
+import CategoryComponent from '../components/CategoryComponent'
 import { FetchedData } from '../interfaces/Interfaces'
 
 function HomePage() {
@@ -36,18 +38,9 @@ function HomePage() {
   
   return (
     <div>
-      <div>
-        <TextField style={ screenMediaQuery ? {} : { width: '-webkit-fill-available' } } size='small' variant='outlined' value={inputData} onChange={handleInputData} />
-        <Button style={ screenMediaQuery ? { marginLeft: '5px'} : { display: 'block', width: '-webkit-fill-available', marginTop: '5px', marginBottom: '5px' }} size='large' variant='contained' onClick={() => {handleSearchClick()}}>Search</Button>
-      </div>
-      <ButtonGroup variant='text'>
-        <Button size='small' onClick={handleCategoryClick}>fashion</Button>
-        <Button size='small' onClick={handleCategoryClick}>nature</Button>
-        <Button size='small' onClick={handleCategoryClick}>science</Button>
-        <Button size='small' onClick={handleCategoryClick}>education</Button>
-        <Button size='small' onClick={handleCategoryClick}>backgrounds</Button>
-      </ButtonGroup>
-      <ImageList gap={4} cols={screenMediaQuery ? 4 : 1} rowHeight={320} variant='masonry'>
+      <SearchComponent inputData={inputData} onChange={handleInputData} buttonClickHandler={() => {handleSearchClick()}} />
+      <CategoryComponent clearCategory={handleSearchClick} onClick={handleCategoryClick} />
+      {fetchedData.loading ? <CircularProgress size={screenMediaQuery ? 100 : 20} /> : <ImageList gap={4} cols={screenMediaQuery ? 4 : 1} rowHeight={320} variant='masonry'>
         <>
           {storedImages.hits?.map((data) => {
             return (
@@ -62,8 +55,8 @@ function HomePage() {
             )
           })}
         </>
-      </ImageList>
-      {fetchedPages ? <Pagination style={{ justifyContent: 'center', display: 'flex' }} page={currentPage} count={fetchedPages ? fetchedPages : 0} onChange={(_, newPage) => {setCurrentPage(newPage)}} /> : null}
+      </ImageList>}
+      {fetchedPages ? <Pagination style={{ justifyContent: 'center', display: 'flex' }} page={currentPage} count={fetchedPages ? fetchedPages : 0} onChange={(_, newPage) => {setCurrentPage(newPage); window.scrollTo({ top: 0, behavior: 'smooth' })}} /> : null}
     </div>
   )
 }
